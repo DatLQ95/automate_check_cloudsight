@@ -2,3 +2,4 @@ credentials/*
 !credentials/example.pem
 all
 hosts
+result/

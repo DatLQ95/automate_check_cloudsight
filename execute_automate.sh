@@ -40,10 +40,11 @@ Help()
 # Get the options
 
 #default values: 
-
+dt=`date '+%d_%m_%Y_%H_%M_%S'`
 sudo_password=""
-output_file_path=""
 verbose=0
+domain=$(< ansible/hosts)
+output_file="$domain-$dt.txt"
 
 while getopts ':h:k:o:s:v' OPTION; do
     case "$OPTION" in
@@ -56,7 +57,7 @@ while getopts ':h:k:o:s:v' OPTION; do
             sudo_password=$OPTARG ;;
         o)
             # Get the output file
-            output_file_path=$OPTARG ;;
+            output_file=$OPTARG ;;
         v)
             # Verbose or not
             verbose=1 ;;
@@ -68,20 +69,33 @@ while getopts ':h:k:o:s:v' OPTION; do
     esac
 done
 
-echo "Hello world"
-echo "The password is $sudo_password" 
-echo "The output_file_path is $output_file_path" 
-echo "The verbose is $verbose" 
-
+if [ "$verbose" -eq "1" ]; then
+    if [ -z "$sudo_password" ]
+    then
+        echo "The password is none"
+    else
+        echo "The password is $sudo_password"
+    fi
+    echo "The output_file_path is $output_file" 
+    echo "The domain is $domain"
+fi
 # Copy the host file.
 cp ansible/hosts /etc/ansible/hosts
-echo "copy host file"
+[ "$verbose" -eq "1" ] && echo "copy host file to /etc/ansible/hosts"
 
-# Check the ansible version and make sure it is there.
-
-
+# Check if we have result folder or not: 
+[ -d "result/" ] || mkdir result
 # Execute ansible-playbook cmd to a out file in result/
-# Rename the file to the "good" format: [date]_[hostnames].txt
+if [ -z "$sudo_password" ]
+then
+    ansible-playbook ansible/site.yaml >> result/$output_file
+else
+    ansible-playbook -k $sudo_password ansible/site.yaml >> result/$output_file
+fi
 
 # Execute a python script for the following task:
 # Clean the oputput file: delete the uncessary lines (fatal lines)
+
+[ "$verbose" -eq "1" ] || python3 save_result.py result/$output_file
+
+echo "Done! Check the output file at result/$output_file"
