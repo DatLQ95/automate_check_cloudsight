@@ -1,13 +1,15 @@
-#Usage#:
+# Usage :
 1. Download Ansible: [Link Here](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
 2. Add the pem keys to credentials/
 3. Edit the all.example file and rename it to all
 5. Modify the hosts file.
 6. Run cd ./execute_ansible.sh to copy the file to /etc/ansible/hosts
-6. Run ansible playbook: ansibke-playbook -K site.yml >> out.txt (enter the sudo password)
-7. Get the result file out.txt
+7. Go to ansible/ directory
+8. Run ansible playbook: ansibke-playbook -K site.yml >> out.txt (enter the sudo password)
+9. Get the result file out.txt
 
 --------------------------------------------------------------------------------------------------------------------------------
+# The work this script doing:
 
 Automate the SSH to the server.
 
